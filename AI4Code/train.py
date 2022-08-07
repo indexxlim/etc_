@@ -12,7 +12,7 @@ import torch
 import argparse
 
 parser = argparse.ArgumentParser(description='Process some arguments')
-parser.add_argument('--model_name_or_path', type=str, default='microsoft/codebert-base')
+parser.add_argument('--model_name_or_path', type=str, default='uclanlp/plbart-base')
 parser.add_argument('--train_mark_path', type=str, default='./data/train_mark.csv')
 parser.add_argument('--train_features_path', type=str, default='./data/train_fts.json')
 parser.add_argument('--val_mark_path', type=str, default='./data/val_mark.csv')
@@ -136,5 +136,6 @@ def train(model, train_loader, val_loader, epochs):
 
 
 model = MarkdownModel(args.model_name_or_path)
+#model.load_state_dict(torch.load('outputs/model_2.bin'))
 model = model.cuda()
 model, y_pred = train(model, train_loader, val_loader, epochs=args.epochs)
