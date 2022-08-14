@@ -9,8 +9,8 @@ class MarkdownDataset(Dataset):
         self.df = df.reset_index(drop=True)
         self.md_max_len = md_max_len
         self.total_max_len = total_max_len  # maxlen allowed by model config
-        #self.tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
-        self.tokenizer = PLBartTokenizer.from_pretrained(model_name_or_path)
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
+        #self.tokenizer = PLBartTokenizer.from_pretrained(model_name_or_path)
 
         self.fts = fts
 
