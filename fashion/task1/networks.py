@@ -29,6 +29,23 @@ Update: 2022.04.20.
 import torch.nn as nn
 import torchvision.models as models
 
+from efficientnet_pytorch import EfficientNet
+ef_model = EfficientNet.from_name('efficientnet-b0')
+
+class EfNetExtractor(nn.Module):
+
+    def __init__(self):
+        super(EfNetExtractor, self).__init__()
+
+        self.efficientnet = EfficientNet.from_name('efficientnet-b0')
+        self.modules_front = list(self.efficientnet.children())[:-5]
+        self.model_front = nn.Sequential(*self.modules_front)
+    def front(self, x):
+        """ In the resnet structure, input 'x' passes through conv layers except for fc layers. """
+        return self.model_front(x)
+
+
+
 class ResExtractor(nn.Module):
     """Feature extractor based on ResNet structure
         Selectable from resnet18 to resnet152
@@ -62,14 +79,18 @@ class ResExtractor(nn.Module):
         return self.model_front(x)
 
 
-class Baseline_ResNet_emo(nn.Module):
+class Net_emo(nn.Module):
     """ Classification network of emotion categories based on ResNet18 structure. """
     
-    def __init__(self):
-        super(Baseline_ResNet_emo, self).__init__()
+    def __init__(self, pre = 'resnet'):
+        super(Net_emo, self).__init__()
 
-        self.encoder = ResExtractor('18')
-        self.avg_pool = nn.AvgPool2d(kernel_size=7)
+        if pre=='resnet':
+            self.encoder = ResExtractor('18')
+        elif pre=='efficient':
+            self.encoder = EfNetExtractor()
+        #self.avg_pool = nn.AvgPool2d(kernel_size=7)
+        self.avg_pool = nn.AdaptiveAvgPool2d((1,1))
 
         self.daily_linear = nn.Linear(512, 7)
         self.gender_linear = nn.Linear(512, 6)
@@ -89,3 +110,4 @@ class Baseline_ResNet_emo(nn.Module):
 
 if __name__ == '__main__':
     pass
+
