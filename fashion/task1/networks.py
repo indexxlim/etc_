@@ -45,6 +45,26 @@ class EfNetExtractor(nn.Module):
         return self.model_front(x)
 
 
+    
+def getModel():
+    
+    model = EfficientNet.from_pretrained('efficientnet-b0')
+    # linear 1408 > 1000
+    rel1 = nn.ReLU(inplace=True)
+    bn1 = nn.BatchNorm1d(1000)
+    drop1 = nn.Dropout(0.25)
+    
+    lin2 = nn.Linear(1000, 512)
+    rel2 = nn.ReLU(inplace=True)
+    bn2 = nn.BatchNorm1d(512)
+    drop2 = nn.Dropout(0.5)
+    
+    lin3 = nn.Linear(1280, 7)
+    
+    return nn.Sequential(model, rel1, bn1, drop1, 
+                         lin2, rel2, bn2, drop2, 
+                         lin3)    
+
 
 class ResExtractor(nn.Module):
     """Feature extractor based on ResNet structure
@@ -87,14 +107,16 @@ class Net_emo(nn.Module):
 
         if pre=='resnet':
             self.encoder = ResExtractor('18')
+            linear_dimension = 512
         elif pre=='efficient':
             self.encoder = EfNetExtractor()
+            linear_dimension = 1280
         #self.avg_pool = nn.AvgPool2d(kernel_size=7)
         self.avg_pool = nn.AdaptiveAvgPool2d((1,1))
 
-        self.daily_linear = nn.Linear(512, 7)
-        self.gender_linear = nn.Linear(512, 6)
-        self.embel_linear = nn.Linear(512, 3)
+        self.daily_linear = nn.Linear(linear_dimension, 7)
+        self.gender_linear = nn.Linear(linear_dimension, 6)
+        self.embel_linear = nn.Linear(linear_dimension, 3)
 
     def forward(self, x):
         """ Forward propagation with input 'x' """
