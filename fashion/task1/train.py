@@ -66,7 +66,7 @@ def main():
     if os.path.exists(save_path) is False:
         os.makedirs(save_path)
 
-    net = Baseline_ResNet_emo().to(DEVICE)
+    net = ENaddnet().to(DEVICE)
 
     df = pd.read_csv('../data/task1/info_etri20_emotion_train.csv')
     train_dataset = ETRIDataset_emo(df, base_path='../data/task1/train/')
